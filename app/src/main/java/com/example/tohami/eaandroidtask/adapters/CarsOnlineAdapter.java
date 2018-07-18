@@ -38,7 +38,6 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
 
     private List<Car> mData;
     private LayoutInflater mInflater;
-    private ItemClickListener mClickListener;
     private Context context ;
 
     private static final String FORMAT = "%02d:%02d:%02d";
@@ -81,13 +80,30 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
     }
-    // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.list_item, parent, false);
         return new ViewHolder(view);
     }
 
+    private void stopTick() {
+        if(updateFuture!=null){
+            updateFuture.cancel(true);
+            updateFuture = null;
+        }
+        seconds = 0 ;
+    }
+
+    public void updateList(List<Car> data) {
+        stopTick();
+
+        mData = data;
+        notifyDataSetChanged();
+
+        if(data.size() >0) {
+            tick();
+        }
+    }
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
@@ -181,21 +197,6 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
         public void setTicks(BroadCastTick ticks) {
             this.ticks = ticks;
         }
-    }
-
-    // convenience method for getting data at click position
-    public Car getItem(int id) {
-        return mData.get(id);
-    }
-
-    // allows clicks events to be caught
-    public void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
-    }
-
-    // parent activity will implement this method to respond to click events
-    public interface ItemClickListener {
-        void onItemClick(View view, int position);
     }
 
     public interface BroadCastTick {

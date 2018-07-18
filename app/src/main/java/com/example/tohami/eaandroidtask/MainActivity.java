@@ -1,6 +1,7 @@
 package com.example.tohami.eaandroidtask;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private int lang;
+    private CarsOnlineAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        carsRecycleView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
         String displayLanguage =  Locale.getDefault().getLanguage() ;
         Log.e("current" , displayLanguage) ;
@@ -53,18 +57,30 @@ public class MainActivity extends AppCompatActivity {
         }else {
             lang = 2 ;
         }
-        getCarsOnline() ;
+        getCarsOnline(null) ;
+
+
     }
 
-    public void getCarsOnline() {
-        Call<CarsOnlineResponse> carsOnlineCall = retrofit.create(Restapi.class).getCarsOnline();
+    public void getCarsOnline(String ticks) {
+        Call<CarsOnlineResponse> carsOnlineCall = retrofit.create(Restapi.class).getCarsOnline(ticks);
 
         carsOnlineCall.enqueue(new Callback<CarsOnlineResponse>() {
             @Override
-            public void onResponse(Call<CarsOnlineResponse> call, Response<CarsOnlineResponse> response) {
-                CarsOnlineAdapter adapter = new CarsOnlineAdapter(MainActivity.this ,lang , response.body().getCars()) ;
-                carsRecycleView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                carsRecycleView.setAdapter(adapter);
+            public void onResponse(Call<CarsOnlineResponse> call, final Response<CarsOnlineResponse> response) {
+
+                if(adapter == null) {
+                    adapter = new CarsOnlineAdapter(MainActivity.this, lang, response.body().getCars());
+                    carsRecycleView.setAdapter(adapter);
+                }else {
+                    adapter.updateList(response.body().getCars());
+                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getCarsOnline(response.body().getTicks());
+                    }
+                } , response.body().getRefreshInterval()*1000);
             }
 
             @Override
