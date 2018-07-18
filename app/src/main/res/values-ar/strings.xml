@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">تطبيقي</string>
+    <string name="bids">بيد</string>
+    <string name="lot">لوت#</string>
+    <string name="time_left">متبقي</string>
+    <string name="grid">شبكه</string>
+    <string name="sort">ترتيب</string>
+    <string name="filter">فلتره</string>
+</resources>
