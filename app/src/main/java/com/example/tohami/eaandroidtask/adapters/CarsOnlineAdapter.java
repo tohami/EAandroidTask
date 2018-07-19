@@ -2,21 +2,17 @@ package com.example.tohami.eaandroidtask.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.tohami.eaandroidtask.R;
 import com.example.tohami.eaandroidtask.pojos.Car;
 import com.google.gson.Gson;
@@ -31,9 +27,6 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by tohami.tohami on 5/10/2018.
- */
 
 public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.ViewHolder> {
 
@@ -42,10 +35,11 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
     private Context context ;
 
     private static final String FORMAT = "%02d:%02d:%02d";
+    private static final int ARGENT_TIME = 60*5 ;
 
-    int seconds = 0 , lang;
+    private int seconds = 0 , lang;
 
-    ArrayList<BroadCastTick> receivers ;
+    private ArrayList<BroadCastTick> receivers ;
     private ScheduledFuture updateFuture;
 
     // data is passed into the constructor
@@ -59,7 +53,7 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
         tick() ;
     }
 
-    public void tick(){
+    private void tick(){
         final Handler mainHandler = new Handler(Looper.getMainLooper());
         updateFuture = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
             @Override
@@ -68,8 +62,6 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("broadcast" , receivers.size() + " reciever") ;
-                        Log.e("broadcast" , seconds + "  ") ;
                         seconds ++ ;
                         if(receivers.size()>0){
                             for (int i =0 ; i<receivers.size() ; i++){
@@ -98,18 +90,13 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
     public void updateList(List<Car> data) {
 
         for(Car car : data) {
-            Log.e("car" , new Gson().toJson(car)) ;
             int index = mData.indexOf(car) ;
             if(index == -1){
                 mData.add(car) ;
                 notifyItemChanged(mData.size()-1);
-                Log.e("notify" , mData.size()-1+" ") ;
             }else {
-                Log.e("old car" , new Gson().toJson(mData.get(index))) ;
                 mData.set(index , car) ;
                 notifyItemChanged(index);
-                Log.e("notify" , index+" ") ;
-                Log.e("new car" , new Gson().toJson(mData.get(index))) ;
             }
         }
     }
@@ -125,11 +112,11 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
         holder.carePrice.setText(String.valueOf(item.getAuctionInfo().getCurrentPrice()));
         //arabic
         if(lang == 1){
-            holder.carTitle.setText(item.getMakeAr() + " " + item.getModelAr() + " " + item.getYear());
+            holder.carTitle.setText(String.format("%s %s %d", item.getMakeAr(), item.getModelAr(), item.getYear()));
             holder.priceCurrency.setText(item.getAuctionInfo().getCurrencyAr());
 
         }else {
-            holder.carTitle.setText(item.getMakeEn() + " " + item.getModelEn() + " " + item.getYear());
+            holder.carTitle.setText(String.format("%s %s %d", item.getMakeEn(), item.getModelEn(), item.getYear()));
             holder.priceCurrency.setText(item.getAuctionInfo().getCurrencyEn());
         }
         Glide.with(context).load(item.getImage().
@@ -138,20 +125,23 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
 
         holder.setTicks(new BroadCastTick() {
             @Override
-            public void onTick(long milliSeconds) {
-               long remaining =  item.getAuctionInfo().getEndDate() - milliSeconds ;
+            public void onTick(long seconds) {
+               long remaining =  item.getAuctionInfo().getEndDate() - seconds ;
                if(remaining==0){
                    receivers.remove(holder.getTicks()) ;
                    mData.remove(position) ;
                    notifyDataSetChanged();
+               }else if(remaining < ARGENT_TIME){
+                   holder.timeLeftValue.setTextColor(Color.RED);
+               }else {
+                   holder.timeLeftValue.setTextColor(Color.DKGRAY);
                }
-                holder.timeLeftValue.setText(""+String.format(Locale.ENGLISH , FORMAT,
+                holder.timeLeftValue.setText(String.format("%s", String.format(Locale.ENGLISH, FORMAT,
                         TimeUnit.SECONDS.toHours(remaining),
                         TimeUnit.SECONDS.toMinutes(remaining) - TimeUnit.HOURS.toMinutes(
                                 TimeUnit.SECONDS.toHours(remaining)),
                         TimeUnit.SECONDS.toSeconds(remaining) - TimeUnit.MINUTES.toSeconds(
-                                TimeUnit.SECONDS.toMinutes(remaining))));
-                Log.e("broadcast" , position + " : " + holder.timeLeftValue.getText()) ;
+                                TimeUnit.SECONDS.toMinutes(remaining)))));
             }
         });
 
@@ -179,7 +169,7 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
     @Override
     public void onViewRecycled(ViewHolder holder) {
         super.onViewRecycled(holder);
-        receivers.remove(((ViewHolder)holder).getTicks()) ;
+        receivers.remove(holder.getTicks()) ;
     }
 
     // stores and recycles views as they are scrolled off screen
@@ -203,7 +193,7 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
             return ticks;
         }
 
-        public void setTicks(BroadCastTick ticks) {
+        void setTicks(BroadCastTick ticks) {
             this.ticks = ticks;
         }
     }

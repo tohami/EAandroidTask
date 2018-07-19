@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ((App) getApplication()).getNetComponent().inject(this);
@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         carsRecycleView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
         String displayLanguage =  Locale.getDefault().getLanguage() ;
-        Log.e("current" , displayLanguage) ;
         if(displayLanguage.equalsIgnoreCase("ar")) {
             lang = 1 ;
         }else {
@@ -109,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.sort_list_tv)
     void displaySortListDialog() {
-        Log.e("sort" , "clicked") ;
     }
 
 }
