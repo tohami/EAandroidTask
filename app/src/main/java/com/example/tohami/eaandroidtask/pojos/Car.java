@@ -4,6 +4,8 @@ package com.example.tohami.eaandroidtask.pojos;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 public class Car {
 
     @SerializedName("carID")
@@ -227,4 +229,29 @@ public class Car {
         this.auctionInfo = auctionInfo;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((carID == null) ? 0 : carID.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+        if (getClass() != o.getClass())
+            return false;
+        final Car other = (Car) o;
+        if (carID == null) {
+            if (other.carID != null)
+                return false;
+        } else if (!carID.equals(other.carID))
+            return false;
+        return true;
+    }
 }

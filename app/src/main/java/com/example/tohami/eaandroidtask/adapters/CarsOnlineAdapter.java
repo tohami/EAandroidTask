@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.tohami.eaandroidtask.R;
 import com.example.tohami.eaandroidtask.pojos.Car;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,13 +96,21 @@ public class CarsOnlineAdapter extends RecyclerView.Adapter<CarsOnlineAdapter.Vi
     }
 
     public void updateList(List<Car> data) {
-        stopTick();
 
-        mData = data;
-        notifyDataSetChanged();
-
-        if(data.size() >0) {
-            tick();
+        for(Car car : data) {
+            Log.e("car" , new Gson().toJson(car)) ;
+            int index = mData.indexOf(car) ;
+            if(index == -1){
+                mData.add(car) ;
+                notifyItemChanged(mData.size()-1);
+                Log.e("notify" , mData.size()-1+" ") ;
+            }else {
+                Log.e("old car" , new Gson().toJson(mData.get(index))) ;
+                mData.set(index , car) ;
+                notifyItemChanged(index);
+                Log.e("notify" , index+" ") ;
+                Log.e("new car" , new Gson().toJson(mData.get(index))) ;
+            }
         }
     }
     // binds the data to the TextView in each row

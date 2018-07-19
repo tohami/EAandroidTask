@@ -2,6 +2,7 @@ package com.example.tohami.eaandroidtask;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,9 +34,12 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.cars_recycle_view)
     RecyclerView carsRecycleView;
 
+    @BindView(R.id.refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     private int lang;
     private CarsOnlineAdapter adapter;
+    private String ticks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         ((App) getApplication()).getNetComponent().inject(this);
 
@@ -57,18 +61,29 @@ public class MainActivity extends AppCompatActivity {
         }else {
             lang = 2 ;
         }
-        getCarsOnline(null) ;
+        getCarsOnline() ;
 
-
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getCarsOnline();
+            }
+        });
     }
 
-    public void getCarsOnline(String ticks) {
+    public void getCarsOnline() {
+
         Call<CarsOnlineResponse> carsOnlineCall = retrofit.create(Restapi.class).getCarsOnline(ticks);
 
         carsOnlineCall.enqueue(new Callback<CarsOnlineResponse>() {
             @Override
             public void onResponse(Call<CarsOnlineResponse> call, final Response<CarsOnlineResponse> response) {
 
+                if(swipeRefreshLayout.isRefreshing()){
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+                ticks = response.body().getTicks() ;
                 if(adapter == null) {
                     adapter = new CarsOnlineAdapter(MainActivity.this, lang, response.body().getCars());
                     carsRecycleView.setAdapter(adapter);
@@ -78,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        getCarsOnline(response.body().getTicks());
+                        getCarsOnline();
                     }
                 } , response.body().getRefreshInterval()*1000);
             }
@@ -91,5 +106,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+    @OnClick(R.id.sort_list_tv)
+    void displaySortListDialog() {
+        Log.e("sort" , "clicked") ;
+    }
 
 }

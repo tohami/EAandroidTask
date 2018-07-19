@@ -48,6 +48,7 @@
                     android:drawableLeft="@drawable/ic_sort"
                     android:layout_marginRight="1dp" />
                 <TextView
+                    android:id="@+id/sort_list_tv"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:text="@string/sort"
