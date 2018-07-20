@@ -69,6 +69,16 @@ public class Car {
     @Expose
     private AuctionInfo auctionInfo;
 
+    private boolean fav ;
+
+    public boolean isFav() {
+        return fav;
+    }
+
+    public void setFav(boolean fav) {
+        this.fav = fav;
+    }
+
     public Integer getCarID() {
         return carID;
     }
@@ -248,10 +258,9 @@ public class Car {
             return false;
         final Car other = (Car) o;
         if (carID == null) {
-            if (other.carID != null)
-                return false;
-        } else if (!carID.equals(other.carID))
-            return false;
-        return true;
+            return other.carID == null;
+        }
+
+        else return carID.equals(other.carID);
     }
 }

@@ -10,7 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -21,8 +22,9 @@
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                android:id="@+id/item_image_iv"/>
+                android:id="@+id/item_image_iv" />
             <ToggleButton
+                android:id="@+id/item_fav_tb"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:background="@drawable/button_favorite"
@@ -50,7 +52,6 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Car title "
                 android:textAlignment="viewStart"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -66,7 +67,6 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Car price"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                 android:textColor="@android:color/holo_green_light"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayout"
@@ -79,7 +79,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
-                android:text="EGP"
                 android:textColor="@android:color/holo_green_light"
                 app:layout_constraintStart_toEndOf="@+id/item_car_price_tv"
                 app:layout_constraintTop_toTopOf="@+id/item_car_price_tv" />
@@ -114,8 +113,7 @@
                         android:id="@+id/lot_value_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:text="123456"/>
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"/>
                 </LinearLayout>
                 <View
                     android:layout_width="1dp"
@@ -141,8 +139,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:text="37"/>
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
                 </LinearLayout>
 
                 <View
@@ -168,8 +165,7 @@
                         android:id="@+id/time_left_value_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:text="06:04:22"/>
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
                 </LinearLayout>
             </LinearLayout>
         </android.support.constraint.ConstraintLayout>

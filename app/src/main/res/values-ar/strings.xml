@@ -7,4 +7,9 @@
     <string name="grid">شبكه</string>
     <string name="sort">ترتيب</string>
     <string name="filter">فلتره</string>
+    <string name="end_date">End Date</string>
+    <string name="price">Price</string>
+    <string name="year">Year</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">descending</string>
 </resources>
